@@ -1,0 +1,55 @@
+{
+  "name": "SIAPE pipeline mensal",
+  "max_concurrent_runs": 1,
+  "timeout_seconds": 3600,
+  "email_notifications": {
+    "on_start": [],
+    "on_success": [],
+    "on_failure": ["noe.machado@picpay.com.br"]
+  },
+  "schedule": {
+    "quartz_cron_expression": "0 0 6 1 * ? *",
+    "timezone_id": "America/Sao_Paulo"
+  },
+  "tasks": [
+    {
+      "task_key": "config",
+      "notebook_task": {
+        "notebook_path": "/Repos/seu-usuario/siape_pipeline/notebooks/00_config.py"
+      },
+      "new_cluster": {
+        "spark_version": "13.3.x-cpu-ml-scala2.12",
+        "node_type_id": "Standard_DS3_v2",
+        "num_workers": 2
+      }
+    },
+    {
+      "task_key": "bronze_ingest",
+      "notebook_task": {
+        "notebook_path": "/Repos/seu-usuario/siape_pipeline/notebooks/01_bronze_ingest.py"
+      },
+      "depends_on": [{ "task_key": "config" }]
+    },
+    {
+      "task_key": "silver_transform",
+      "notebook_task": {
+        "notebook_path": "/Repos/seu-usuario/siape_pipeline/notebooks/02_silver_transform.sql"
+      },
+      "depends_on": [{ "task_key": "bronze_ingest" }]
+    },
+    {
+      "task_key": "gold_publish",
+      "notebook_task": {
+        "notebook_path": "/Repos/seu-usuario/siape_pipeline/notebooks/03_gold_publish.sql"
+      },
+      "depends_on": [{ "task_key": "silver_transform" }]
+    },
+    {
+      "task_key": "statistics",
+      "notebook_task": {
+        "notebook_path": "/Repos/seu-usuario/siape_pipeline/notebooks/04_stats_enhanced.py"
+      },
+      "depends_on": [{ "task_key": "gold_publish" }]
+    }
+  ]
+}
