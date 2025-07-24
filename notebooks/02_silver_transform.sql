@@ -25,7 +25,8 @@ CREATE TABLE IF NOT EXISTS siape_remuneracao_silver (
   remuneracao_pos_deducoes     DOUBLE,
   total_verbas_inden           DOUBLE,
   source_file                  STRING,
-  reference_dt                 DATE
+  reference_dt                 DATE,
+  data_ingestao                TIMESTAMP
 )
 USING DELTA
 PARTITIONED BY (reference_dt);
@@ -72,6 +73,7 @@ SELECT
   ROUND(remuneracao_pos_deducoes_rs,       2) AS remuneracao_pos_deducoes,
   ROUND(total_verbas_inden_rs,             2) AS total_verbas_inden,
   source_file,
-  reference_dt
+  reference_dt,
+  data_ingestao  
 FROM siape_remuneracao_raw
 WHERE cpf IS NOT NULL;
