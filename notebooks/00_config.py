@@ -8,6 +8,8 @@ spark.sql("""
 """)
 spark.sql("USE public_informations")
 
+# COMMAND ----------
+
 # 2) Cria a tabela de registro de metadados (schema_registry)
 spark.sql("""
   CREATE TABLE IF NOT EXISTS schema_registry (
@@ -27,6 +29,8 @@ spark.sql("""
     SELECT 1 FROM schema_registry WHERE table_name = 'schema_registry'
   )
 """)
+
+# COMMAND ----------
 
 # 3. Criação da tabela Bronze com reference_dt como STRING
 spark.sql("""
@@ -80,6 +84,9 @@ CREATE TABLE IF NOT EXISTS siape_remuneracao_raw (
 USING DELTA
 PARTITIONED BY (reference_dt)
 """)
+time.sleep(2)
+
+# COMMAND ----------
 
 # 4. Criação da view tabela Bronze
 spark.sql("""
@@ -132,6 +139,7 @@ SELECT
   data_ingestao                        AS data_ingestao
 FROM public_informations.siape_remuneracao_raw;
 """)
+time.sleep(2)
 
 # 5) Widgets de parametrização para notebooks sequenciais
 dbutils.widgets.text("year", "2025", "Year")
